@@ -398,16 +398,6 @@ This helps make it clear when a button has successfully done something.
 
 ---
 
-## ✦ Tab Layout
-
-SceneKeeper is organized into clear workspace tabs:
-
-```text
-Scene → Scene Builder → Captured Chat → Partners → History → Settings
-```
-
----
-
 ## ✦ Commands
 
 ```text
