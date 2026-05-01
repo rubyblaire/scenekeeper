@@ -18,6 +18,24 @@ Keep track of the characters currently involved in your active RP scene.
 - Add partner notes
 - Add relationship or context details
 - Add partner tags for easier organization
+- Assign custom partner colors for easier visual tracking
+
+---
+
+### ***Partner Colors***
+
+SceneKeeper lets you assign custom colors to tracked partners.
+
+This is useful when you are writing with multiple people and want to quickly tell who is who at a glance.
+
+Partner colors can be used for:
+
+- Nearby partner markers
+- Soft visual highlights
+- Multi-person scenes
+- Venue scenes
+- Group RP
+- Long-running story groups
 
 ---
 
@@ -53,6 +71,49 @@ Supported toggles may include:
 - Free Company
 - Linkshell
 - Cross-world Linkshell
+
+---
+
+### ***Partner Chat Filter***
+
+Busy RP spaces can get messy fast. SceneKeeper includes captured chat filtering so you can focus on the people actually involved in your scene.
+
+Filter modes may include:
+
+- All Captured Chat
+- Scene Partners Only
+- Scene Partners + Me
+- Pinned Only
+
+This is especially useful for:
+
+- Multi-scene venues
+- Crowded RP rooms
+- Group RP
+- Companion sessions
+- Events with overlapping conversations
+
+SceneKeeper can also show how many captured lines are visible after filtering, making it easier to see when the view is narrowed.
+
+---
+
+### ***Captured Chat Search***
+
+Search through captured chat by:
+
+- Sender name
+- Message content
+- Chat type
+
+This makes it easier to find a specific line, moment, or speaker without scrolling through everything manually.
+
+---
+
+### ***Add Sender as Partner***
+
+When reviewing captured chat, SceneKeeper can help you quickly add a sender as a scene partner.
+
+This is useful when someone joins the scene after it has already started or when you want to quickly build your partner list from active chat.
 
 ---
 
@@ -154,6 +215,8 @@ Marker options may include:
 - Marker visibility
 - Marker size
 - Highlight size
+- Global marker color
+- Partner-specific marker colors
 - Partner visibility state
 
 ---
@@ -218,6 +281,67 @@ You can copy:
 
 ---
 
+### ***Scene Builder***
+
+Scene Builder gives long-form RP writers a dedicated space to draft up to five RP paragraphs before posting.
+
+Each paragraph box includes a character counter so you can keep your writing inside the configured chat limit.
+
+Scene Builder includes:
+
+- Five paragraph boxes
+- Paragraph labels from 1/5 through 5/5
+- Character limit counter
+- Configurable paragraph limit
+- Guided clipboard queue
+- Copy Next button
+- Copy All button
+- Clear Builder button
+- Panic Stop button
+
+Scene Builder is especially useful for players who normally write RP posts in Notepad, Discord, or another external editor before copying them into chat.
+
+---
+
+### ***Guided Queue***
+
+The Guided Queue helps you post multi-part RP responses safely.
+
+Instead of automatically sending messages, SceneKeeper copies each paragraph to your clipboard one at a time. You stay in control of when each paragraph is pasted and sent.
+
+Basic flow:
+
+```text
+Write paragraphs.
+Start Guided Queue.
+Paste and send paragraph 1 in chat.
+Click Copy Next.
+Paste and send paragraph 2.
+Repeat until finished.
+```
+
+The queue can be stopped at any time with ***Panic Stop***.
+
+---
+
+### ***Button Feedback***
+
+SceneKeeper provides visible feedback when actions are completed.
+
+Examples:
+
+- Copied!
+- Scene saved.
+- Scene loaded.
+- Markdown copied.
+- Summary copied.
+- Builder cleared.
+- Queue stopped.
+
+This helps make it clear when a button has successfully done something.
+
+---
+
 ## ✦ Commands
 
 ```text
@@ -228,6 +352,7 @@ You can copy:
 /sk remove <name>
 /sk clear
 /sk scene <scene name>
+/sk start
 /sk pause
 /sk resume
 /sk save
@@ -281,8 +406,9 @@ It simply gives you a cleaner space to keep track of:
 - What needs to happen next
 - Which scenes are worth saving
 - What details you want to remember
+- Which paragraphs you are preparing to post
 
-The goal is to make RP smoother, especially when chat moves quickly or a scene has multiple participants.
+The goal is to make RP smoother, especially when chat moves quickly, a scene has multiple participants, or a writer wants to prepare longer responses in advance.
 
 ---
 
@@ -303,6 +429,7 @@ It is useful for:
 - Continuity tracking
 - Scene recaps
 - RP journaling
+- Multi-paragraph writing
 
 ---
 
@@ -314,6 +441,7 @@ SceneKeeper is designed as a local roleplay organization tool.
 - Scene partner lists are stored locally.
 - Scene history is stored locally.
 - Captured chat is handled locally.
+- Scene Builder text is handled locally.
 - No analytics are included.
 - No remote logging is included.
 
@@ -326,12 +454,17 @@ SceneKeeper includes options for adjusting how scene information is displayed an
 Customization may include:
 
 - Chat log filters
+- Partner chat filtering
+- Captured chat search
 - Marker visibility
 - Marker size
 - Highlight size
+- Global marker color
+- Partner-specific colors
 - Scene tracking behavior
-- Scene log cleanup
+- Captured chat cleanup
 - Maximum saved scenes
+- Scene Builder character limit
 - History search behavior
 
 ---
