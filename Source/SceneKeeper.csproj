@@ -1,0 +1,15 @@
+<Project Sdk="Dalamud.NET.Sdk/15.0.0">
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AssemblyName>SceneKeeper</AssemblyName>
+    <RootNamespace>SceneKeeper</RootNamespace>
+    <Version>1.0.2.0</Version>
+    <Authors>Ruby Blaire</Authors>
+    <Company>Ruby Blaire</Company>
+    <Description>A SFW roleplay scene assistant for FFXIV.</Description>
+  </PropertyGroup>
+</Project>
