@@ -8,12 +8,10 @@
     "Description": "A lightweight SFW roleplay scene assistant for tracking RP partners, organizing scene chat, keeping notes, and making active scenes easier to follow.",
     "ApplicableVersion": "any",
     "DalamudApiLevel": 15,
-    #"TestingDalamudApiLevel": 15,
     "Punchline": "Keep your RP scenes organized, visible, and easy to follow.",
     "RepoUrl": "https://github.com/rubyblaire/scenekeeper",
     "DownloadLinkInstall": "https://github.com/rubyblaire/scenekeeper/releases/download/1.0.6.0/scenekeeper.zip",
     "DownloadLinkUpdate": "https://github.com/rubyblaire/scenekeeper/releases/download/1.0.6.0/scenekeeper.zip",
-    #"DownloadLinkTesting": "https://github.com/rubyblaire/scenekeeper/releases/download/1.0.6.0/scenekeeper.zip",
     "Tags": [
       "roleplay",
       "rp",
