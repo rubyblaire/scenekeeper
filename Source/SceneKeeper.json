@@ -1,0 +1,9 @@
+{
+  "Author": "Ruby Blaire",
+  "Name": "SceneKeeper",
+  "Punchline": "Keep your RP scenes organized, visible, and easy to follow.",
+  "Description": "A SFW roleplay scene assistant for tracking RP partners, organizing scene chat, drafting responses, and keeping active scenes easy to follow.",
+  "InternalName": "SceneKeeper",
+  "ApplicableVersion": "any",
+  "Tags": ["roleplay", "rp", "chat", "social", "utility"]
+}
