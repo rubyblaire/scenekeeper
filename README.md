@@ -2,7 +2,7 @@
 
 ***SceneKeeper*** is a lightweight, SFW roleplay scene assistant for FFXIV.
 
-It is designed to help roleplayers keep active scenes organized, readable, and easy to follow, especially during busy venues, group scenes, companion sessions, and long-form RP.
+It is designed to help roleplayers keep active scenes organized, readable, and easy to revisit. Whether you are writing in a busy venue, hosting a companion session, running a group scene, or tracking a long-term story arc, SceneKeeper gives you a cleaner space to manage the moment.
 
 ---
 
@@ -15,27 +15,31 @@ Keep track of the characters currently involved in your active RP scene.
 - Add and remove scene partners
 - Maintain a focused roster for the current scene
 - See which tracked partners are nearby
-- Keep group scenes easier to follow
+- Add partner notes
+- Add relationship or context details
+- Add partner tags for easier organization
 
 ---
 
-### ***Scene Log***
+### ***Captured Chat***
 
 SceneKeeper provides a cleaner local view of RP-relevant chat.
 
 - Capture selected chat types
 - Review recent scene messages
 - Select individual lines
+- Pin important lines
 - Copy selected scene context
-- Clear the scene log between scenes
+- Copy selected chat as Markdown
+- Clear captured chat between scenes
 
 ---
 
 ### ***Chat Type Toggles***
 
-Choose which chat types SceneKeeper should include in the scene log.
+Choose which chat types SceneKeeper should include in the captured chat log.
 
-Useful for keeping the log focused and avoiding unnecessary clutter.
+This helps keep the log focused and avoids unnecessary clutter.
 
 Supported toggles may include:
 
@@ -52,6 +56,24 @@ Supported toggles may include:
 
 ---
 
+### ***Pinned Scene Lines***
+
+Pin important lines from captured chat so they are easy to find later.
+
+Pinned lines are useful for:
+
+- Memorable dialogue
+- Emotional beats
+- Important lore reveals
+- Promises or threats
+- Scene quotes
+- Journal excerpts
+- Recap writing
+
+Pinned lines are saved with scene history.
+
+---
+
 ### ***Scene Notes***
 
 Use the notes area to keep track of scene details while you write.
@@ -63,8 +85,47 @@ Examples:
 - Locations
 - Character intentions
 - OOC reminders
+- Scene tone
 - Hooks to revisit later
-- Scene tone or pacing notes
+- Plot points to remember
+
+---
+
+### ***Follow-Up Tasks***
+
+Add simple follow-up tasks to a scene so important next steps are not forgotten.
+
+Examples:
+
+- Update character journal
+- Send a follow-up message
+- Schedule the next scene
+- Add a new character note
+- Save screenshots
+- Write a recap
+- Follow up on a plot hook
+
+Follow-up tasks are saved with scene history.
+
+---
+
+### ***Scene Tags***
+
+Add tags to scenes for easier organization.
+
+Examples:
+
+- Romance
+- Mystery
+- Combat
+- Venue
+- Important
+- Follow-up
+- Completed
+- Ongoing
+- Character Arc
+
+Tags are included in saved scene history and Markdown exports.
 
 ---
 
@@ -88,6 +149,73 @@ Optional soft markers can help identify tracked scene partners on screen.
 
 These are meant to be subtle, readable, and non-intrusive.
 
+Marker options may include:
+
+- Marker visibility
+- Marker size
+- Highlight size
+- Partner visibility state
+
+---
+
+### ***Scene History***
+
+Save completed or important scenes to History so they can be revisited later.
+
+Saved scenes may include:
+
+- Scene name
+- Scene notes
+- Scene tags
+- Scene partners
+- Partner notes
+- Partner relationship/context details
+- Partner tags
+- Captured chat
+- Pinned lines
+- Follow-up tasks
+
+History can be searched, copied, loaded, or deleted.
+
+---
+
+### ***Searchable History***
+
+Search your saved scenes by details such as:
+
+- Scene name
+- Partner name
+- Tags
+- Notes
+- Captured dialogue
+- Pinned lines
+
+This makes SceneKeeper useful for long-term RP continuity and recurring character arcs.
+
+---
+
+### ***Markdown Export***
+
+SceneKeeper can copy scene information in Markdown format for easy use outside the game.
+
+Useful for:
+
+- Discord recaps
+- Character journals
+- Carrd pages
+- GitHub notes
+- Personal archives
+- Story summaries
+- RP continuity tracking
+
+You can copy:
+
+- Current scene as Markdown
+- Selected captured chat as Markdown
+- Saved scenes as Markdown
+- Scene summaries
+- Pinned lines
+
 ---
 
 ## ✦ Commands
@@ -102,6 +230,8 @@ These are meant to be subtle, readable, and non-intrusive.
 /sk scene <scene name>
 /sk pause
 /sk resume
+/sk save
+/sk new
 /sk settings
 ```
 
@@ -138,7 +268,7 @@ https://raw.githubusercontent.com/rubyblaire/scenekeeper/main/pluginmaster.json
 
 ## ✦ Purpose
 
-SceneKeeper is made for ***organization, comfort, and clarity*** during roleplay.
+SceneKeeper is made for ***organization, comfort, and continuity*** during roleplay.
 
 It does not replace roleplay, automate roleplay, or control your character.
 
@@ -146,10 +276,13 @@ It simply gives you a cleaner space to keep track of:
 
 - Who is in your scene
 - What has been said
+- Which lines matter most
 - Who is nearby
+- What needs to happen next
+- Which scenes are worth saving
 - What details you want to remember
 
-The goal is to make RP feel smoother, especially when chat is moving quickly or the scene has multiple participants.
+The goal is to make RP smoother, especially when chat moves quickly or a scene has multiple participants.
 
 ---
 
@@ -167,6 +300,9 @@ It is useful for:
 - Character meetings
 - Event nights
 - Personal scene organization
+- Continuity tracking
+- Scene recaps
+- RP journaling
 
 ---
 
@@ -176,7 +312,8 @@ SceneKeeper is designed as a local roleplay organization tool.
 
 - Scene notes are stored locally.
 - Scene partner lists are stored locally.
-- Scene logs are handled locally.
+- Scene history is stored locally.
+- Captured chat is handled locally.
 - No analytics are included.
 - No remote logging is included.
 
@@ -184,7 +321,7 @@ SceneKeeper is designed as a local roleplay organization tool.
 
 ## ✦ Customization
 
-SceneKeeper includes options for adjusting how scene information is displayed.
+SceneKeeper includes options for adjusting how scene information is displayed and saved.
 
 Customization may include:
 
@@ -194,6 +331,8 @@ Customization may include:
 - Highlight size
 - Scene tracking behavior
 - Scene log cleanup
+- Maximum saved scenes
+- History search behavior
 
 ---
 
