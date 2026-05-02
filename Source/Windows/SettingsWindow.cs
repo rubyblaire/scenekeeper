@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Numerics;
 using Dalamud.Interface.Windowing;
 using Dalamud.Bindings.ImGui;
@@ -6,6 +7,9 @@ namespace SceneKeeper.Windows;
 
 public sealed class SettingsWindow : Window
 {
+    private const string DiscordInviteUrl = "https://discord.gg/Dr836dmbqh";
+    private const string KofiUrl = "https://ko-fi.com/rubyblaire";
+
     private static readonly (string Kind, string Label)[] ChatKindOptions =
     {
         ("Say", "Say"),
@@ -98,6 +102,18 @@ public sealed class SettingsWindow : Window
         if (ImGui.SliderInt("Max saved scenes", ref maxHistory, 1, 100)) { this.configuration.MaxSceneHistoryEntries = maxHistory; this.saveConfig(); }
 
         ImGui.Separator();
+        ImGui.TextUnformatted("Support & Bug Reports");
+        ImGui.TextWrapped("Need help, found a bug, or want to support SceneKeeper? These links open in your browser.");
+
+        if (ImGui.Button("Report a Bug / Join Discord"))
+            OpenExternalUrl(DiscordInviteUrl);
+
+        ImGui.SameLine();
+
+        if (ImGui.Button("Support on Ko-fi"))
+            OpenExternalUrl(KofiUrl);
+
+        ImGui.Separator();
         ImGui.TextUnformatted("Logged Chat Types");
 
         if (ImGui.Button("RP Defaults"))
@@ -124,6 +140,22 @@ public sealed class SettingsWindow : Window
 
             if (i % 2 == 0)
                 ImGui.SameLine(260);
+        }
+    }
+
+    private static void OpenExternalUrl(string url)
+    {
+        try
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = url,
+                UseShellExecute = true,
+            });
+        }
+        catch (Exception)
+        {
+            ImGui.SetClipboardText(url);
         }
     }
 

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Numerics;
 using System.Text.RegularExpressions;
 using Dalamud.Interface.Windowing;
@@ -12,6 +13,8 @@ namespace SceneKeeper.Windows;
 public sealed class MainWindow : Window
 {
     private const int SceneBuilderHardCharacterLimit = 350;
+    private const string DiscordInviteUrl = "https://discord.gg/Dr836dmbqh";
+    private const string KofiUrl = "https://ko-fi.com/rubyblaire";
 
     private static readonly (string Kind, string Label)[] ChatKindOptions =
     {
@@ -1152,6 +1155,18 @@ public sealed class MainWindow : Window
         if (ImGui.SliderInt("Max saved scenes", ref maxHistory, 1, 100)) { this.configuration.MaxSceneHistoryEntries = maxHistory; this.saveConfig(); }
 
         ImGui.Separator();
+        ImGui.TextUnformatted("Support & Bug Reports");
+        ImGui.TextWrapped("Need help, found a bug, or want to support SceneKeeper? These links open in your browser.");
+
+        if (ImGui.Button("Report a Bug / Join Discord"))
+            this.OpenExternalUrl(DiscordInviteUrl, "Discord invite copied to clipboard.");
+
+        ImGui.SameLine();
+
+        if (ImGui.Button("Support on Ko-fi"))
+            this.OpenExternalUrl(KofiUrl, "Ko-fi link copied to clipboard.");
+
+        ImGui.Separator();
         ImGui.TextUnformatted("Logged Chat Types");
         ImGui.TextWrapped("Toggle which visible chat types SceneKeeper should capture into the Captured Chat tab.");
 
@@ -1199,6 +1214,23 @@ public sealed class MainWindow : Window
             this.configuration.CustomDictionaryWords.Clear();
             this.saveConfig();
             this.statusMessage = "Custom spellcheck dictionary cleared.";
+        }
+    }
+
+    private void OpenExternalUrl(string url, string fallbackStatusMessage)
+    {
+        try
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = url,
+                UseShellExecute = true,
+            });
+        }
+        catch (Exception)
+        {
+            ImGui.SetClipboardText(url);
+            this.statusMessage = fallbackStatusMessage;
         }
     }
 

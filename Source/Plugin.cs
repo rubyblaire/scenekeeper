@@ -18,6 +18,7 @@ public sealed class Plugin : IDalamudPlugin
     private readonly ICommandManager commandManager;
     private readonly IChatGui chatGui;
     private readonly IContextMenu contextMenu;
+    private readonly IObjectTable objectTable;
     private readonly IPluginLog log;
     private readonly WindowSystem windowSystem = new("SceneKeeper");
     private readonly MainWindow mainWindow;
@@ -41,6 +42,7 @@ public sealed class Plugin : IDalamudPlugin
         this.commandManager = commandManager;
         this.chatGui = chatGui;
         this.contextMenu = contextMenu;
+        this.objectTable = objectTable;
         this.log = log;
 
         this.Configuration = this.pluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
@@ -58,7 +60,7 @@ public sealed class Plugin : IDalamudPlugin
             Priority = -10,
             OnClicked = this.OnAddScenePartnerMenuClicked,
         };
-        this.contextMenu.AddMenuItem(ContextMenuType.Default, this.addScenePartnerMenuItem);
+        this.contextMenu.OnMenuOpened += this.OnContextMenuOpened;
 
         this.windowSystem.AddWindow(this.mainWindow);
         this.windowSystem.AddWindow(this.settingsWindow);
@@ -131,29 +133,104 @@ public sealed class Plugin : IDalamudPlugin
         }
     }
 
-    private void OnAddScenePartnerMenuClicked(IMenuItemClickedArgs args)
+
+    private void OnContextMenuOpened(IMenuOpenedArgs args)
     {
-        if (!this.Configuration.EnableTargetContextMenu)
-            return;
-
-        if (args.Target is not MenuTargetDefault target)
-            return;
-
-        var targetName = target.TargetObject?.Name.TextValue ?? target.TargetName;
-        var worldName = string.Empty;
         try
         {
-            worldName = target.TargetHomeWorld.Value.Name.ToString();
+            if (!this.Configuration.EnableTargetContextMenu)
+                return;
+
+            // Character select and other pre-login screens can expose default context menus
+            // before the game object table/local player state is safe to query. Do not add
+            // SceneKeeper's player action there.
+            if (this.objectTable.LocalPlayer is null)
+                return;
+
+            if (args.MenuType != ContextMenuType.Default)
+                return;
+
+            if (args.Target is not MenuTargetDefault target)
+                return;
+
+            var targetName = this.GetSafeContextTargetName(target);
+            if (string.IsNullOrWhiteSpace(targetName))
+                return;
+
+            // Avoid offering "Add to SceneKeeper" on yourself. This also prevents the
+            // reported CTD path when right-clicking your own character from character select.
+            var localName = this.objectTable.LocalPlayer?.Name.TextValue;
+            if (NameWorldParser.NamesMatch(targetName, localName))
+                return;
+
+            args.AddMenuItem(this.addScenePartnerMenuItem);
+        }
+        catch (Exception ex)
+        {
+            this.log.Error(ex, "SceneKeeper failed while preparing context menu item.");
+        }
+    }
+
+    private string GetSafeContextTargetName(MenuTargetDefault target)
+    {
+        try
+        {
+            var objectName = target.TargetObject?.Name.TextValue;
+            if (!string.IsNullOrWhiteSpace(objectName))
+                return objectName;
         }
         catch
         {
-            // Some context menu targets do not expose a useful home world.
+            // TargetObject can be unavailable on some menu sources. Fall back safely.
         }
 
-        if (this.sceneService.AddPartner(targetName, worldName))
-            this.chatGui.Print($"Added scene partner: {NameWorldParser.Parse(targetName, worldName).DisplayName}", "SceneKeeper");
-        else
-            this.chatGui.PrintError("Could not add scene partner. They may already be tracked.", "SceneKeeper");
+        return target.TargetName ?? string.Empty;
+    }
+
+    private void OnAddScenePartnerMenuClicked(IMenuItemClickedArgs args)
+    {
+        try
+        {
+            if (!this.Configuration.EnableTargetContextMenu)
+                return;
+
+            if (this.objectTable.LocalPlayer is null)
+                return;
+
+            if (args.Target is not MenuTargetDefault target)
+                return;
+
+            var targetName = this.GetSafeContextTargetName(target);
+            if (string.IsNullOrWhiteSpace(targetName))
+                return;
+
+            var localName = this.objectTable.LocalPlayer?.Name.TextValue;
+            if (NameWorldParser.NamesMatch(targetName, localName))
+            {
+                this.chatGui.PrintError("SceneKeeper does not add your own character as a scene partner.", "SceneKeeper");
+                return;
+            }
+
+            var worldName = string.Empty;
+            try
+            {
+                worldName = target.TargetHomeWorld.Value.Name.ToString();
+            }
+            catch
+            {
+                // Some context menu targets do not expose a useful home world.
+            }
+
+            if (this.sceneService.AddPartner(targetName, worldName))
+                this.chatGui.Print($"Added scene partner: {NameWorldParser.Parse(targetName, worldName).DisplayName}", "SceneKeeper");
+            else
+                this.chatGui.PrintError("Could not add scene partner. They may already be tracked.", "SceneKeeper");
+        }
+        catch (Exception ex)
+        {
+            this.log.Error(ex, "SceneKeeper failed while adding context-menu scene partner.");
+            this.chatGui.PrintError("SceneKeeper could not add that context-menu target safely.", "SceneKeeper");
+        }
     }
 
     private void DrawUi()
@@ -180,7 +257,7 @@ public sealed class Plugin : IDalamudPlugin
         this.pluginInterface.UiBuilder.OpenConfigUi -= this.OpenConfigUi;
         this.commandManager.RemoveHandler(CommandName);
         this.commandManager.RemoveHandler(ShortCommandName);
-        this.contextMenu.RemoveMenuItem(ContextMenuType.Default, this.addScenePartnerMenuItem);
+        this.contextMenu.OnMenuOpened -= this.OnContextMenuOpened;
         this.windowSystem.RemoveAllWindows();
         this.chatCaptureService.Dispose();
     }
