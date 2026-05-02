@@ -67,11 +67,35 @@ public sealed class SettingsWindow : Window
         var highlightRadius = this.configuration.HighlightRadius;
         if (ImGui.SliderFloat("Highlight size", ref highlightRadius, 18.0f, 90.0f)) { this.configuration.HighlightRadius = highlightRadius; this.saveConfig(); }
 
+        var highlightColor = new Vector3(
+            this.configuration.HighlightColorRed,
+            this.configuration.HighlightColorGreen,
+            this.configuration.HighlightColorBlue);
+        if (ImGui.ColorEdit3("Marker/highlight color", ref highlightColor))
+        {
+            this.configuration.HighlightColorRed = highlightColor.X;
+            this.configuration.HighlightColorGreen = highlightColor.Y;
+            this.configuration.HighlightColorBlue = highlightColor.Z;
+            this.saveConfig();
+        }
+
+        ImGui.SameLine();
+        if (ImGui.SmallButton("Reset Color"))
+        {
+            this.configuration.HighlightColorRed = 0.78f;
+            this.configuration.HighlightColorGreen = 0.64f;
+            this.configuration.HighlightColorBlue = 0.40f;
+            this.saveConfig();
+        }
+
         var offset = this.configuration.MarkerVerticalOffset;
         if (ImGui.SliderFloat("Marker vertical offset", ref offset, 0.5f, 4.0f)) { this.configuration.MarkerVerticalOffset = offset; this.saveConfig(); }
 
         var maxMessages = this.configuration.MaxSceneMessages;
-        if (ImGui.SliderInt("Max scene log lines", ref maxMessages, 25, 1000)) { this.configuration.MaxSceneMessages = maxMessages; this.saveConfig(); }
+        if (ImGui.SliderInt("Max captured lines", ref maxMessages, 25, 1000)) { this.configuration.MaxSceneMessages = maxMessages; this.saveConfig(); }
+
+        var maxHistory = this.configuration.MaxSceneHistoryEntries;
+        if (ImGui.SliderInt("Max saved scenes", ref maxHistory, 1, 100)) { this.configuration.MaxSceneHistoryEntries = maxHistory; this.saveConfig(); }
 
         ImGui.Separator();
         ImGui.TextUnformatted("Logged Chat Types");

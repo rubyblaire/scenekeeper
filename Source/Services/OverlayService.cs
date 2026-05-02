@@ -23,10 +23,6 @@ public sealed class OverlayService
             return;
 
         var drawList = ImGui.GetForegroundDrawList();
-        var markerColor = ImGui.GetColorU32(new Vector4(0.78f, 0.64f, 0.40f, 1.0f));
-        var markerFill = ImGui.GetColorU32(new Vector4(0.78f, 0.64f, 0.40f, 0.22f));
-        var highlightColor = ImGui.GetColorU32(new Vector4(0.78f, 0.64f, 0.40f, 0.72f));
-        var highlightFill = ImGui.GetColorU32(new Vector4(0.78f, 0.64f, 0.40f, 0.08f));
         var shadow = ImGui.GetColorU32(new Vector4(0.02f, 0.02f, 0.02f, 0.86f));
 
         var markerRadius = Math.Clamp(this.configuration.MarkerRadius, 6.0f, 30.0f);
@@ -34,6 +30,24 @@ public sealed class OverlayService
 
         foreach (var player in this.partnerTrackingService.GetNearbyTrackedPlayers())
         {
+            var partner = this.partnerTrackingService.GetTrackedPartnerForPlayer(player.Name.TextValue);
+            var accent = partner?.UseCustomColor == true
+                ? new Vector4(
+                    Math.Clamp(partner.ColorRed, 0.0f, 1.0f),
+                    Math.Clamp(partner.ColorGreen, 0.0f, 1.0f),
+                    Math.Clamp(partner.ColorBlue, 0.0f, 1.0f),
+                    1.0f)
+                : new Vector4(
+                    Math.Clamp(this.configuration.HighlightColorRed, 0.0f, 1.0f),
+                    Math.Clamp(this.configuration.HighlightColorGreen, 0.0f, 1.0f),
+                    Math.Clamp(this.configuration.HighlightColorBlue, 0.0f, 1.0f),
+                    1.0f);
+
+            var markerColor = ImGui.GetColorU32(new Vector4(accent.X, accent.Y, accent.Z, 1.0f));
+            var markerFill = ImGui.GetColorU32(new Vector4(accent.X, accent.Y, accent.Z, 0.22f));
+            var highlightColor = ImGui.GetColorU32(new Vector4(accent.X, accent.Y, accent.Z, 0.72f));
+            var highlightFill = ImGui.GetColorU32(new Vector4(accent.X, accent.Y, accent.Z, 0.08f));
+
             var worldPos = player.Position + new Vector3(0, this.configuration.MarkerVerticalOffset, 0);
             if (!this.gameGui.WorldToScreen(worldPos, out var screenPos))
                 continue;

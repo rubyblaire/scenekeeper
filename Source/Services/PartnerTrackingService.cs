@@ -26,9 +26,16 @@ public sealed class PartnerTrackingService
         return nearby;
     }
 
+    public string LocalPlayerName => this.objectTable.LocalPlayer?.Name.TextValue ?? string.Empty;
+
     public bool IsNearby(string partnerName)
     {
         return this.GetNearbyTrackedPlayers()
-            .Any(player => string.Equals(player.Name.TextValue, partnerName, StringComparison.OrdinalIgnoreCase));
+            .Any(player => NameWorldParser.NamesMatch(player.Name.TextValue, partnerName));
+    }
+
+    public SceneKeeper.Models.ScenePartner? GetTrackedPartnerForPlayer(string playerName)
+    {
+        return this.sceneService.FindTrackedPartner(playerName);
     }
 }
