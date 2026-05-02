@@ -7,7 +7,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <AssemblyName>SceneKeeper</AssemblyName>
     <RootNamespace>SceneKeeper</RootNamespace>
-    <Version>1.1.4.0</Version>
+    <Version>1.1.5.0</Version>
     <Authors>Ruby Blaire</Authors>
     <Company>Ruby Blaire</Company>
     <Description>A SFW roleplay scene assistant for FFXIV.</Description>

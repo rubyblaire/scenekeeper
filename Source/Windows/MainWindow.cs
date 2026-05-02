@@ -246,7 +246,7 @@ public sealed class MainWindow : Window
     {
         ImGui.Separator();
         ImGui.TextUnformatted("Manual Task Sharing");
-        ImGui.TextDisabled("Share follow-up tasks manually by copying a small JSON payload and sending it to another writer. They can import it to merge task updates.");
+        ImGui.TextDisabled("Share follow-up tasks manually by copying a compact SceneKeeper task share string and sending it to another writer. They can import it to merge task updates.");
 
         var enabled = this.configuration.EnableTaskSharingTools;
         if (ImGui.Checkbox("Enable manual task sharing tools", ref enabled))
@@ -283,15 +283,15 @@ public sealed class MainWindow : Window
             this.saveConfig();
         }
 
-        if (ImGui.Button("Copy Task Share Payload"))
+        if (ImGui.Button("Copy Task Share String"))
         {
             ImGui.SetClipboardText(this.BuildCurrentTaskSyncPayload());
-            this.statusMessage = "Copied! Task share payload copied to clipboard.";
+            this.statusMessage = "Copied! Task share string copied to clipboard.";
         }
 
-        ImGui.TextUnformatted("Import Task Share Payload");
+        ImGui.TextUnformatted("Import Task Share String");
         ImGui.InputTextMultiline("##tasksyncimport", ref this.taskSyncImportText, 12000, new Vector2(-1, 78));
-        if (ImGui.Button("Import Shared Tasks"))
+        if (ImGui.Button("Import Task Share String"))
         {
             if (this.taskShareService.TryImportPayload(
                     this.taskSyncImportText,
