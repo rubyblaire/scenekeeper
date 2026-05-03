@@ -2,7 +2,7 @@
   "Author": "Ruby Blaire",
   "Name": "SceneKeeper",
   "InternalName": "SceneKeeper",
-  "AssemblyVersion": "1.5.0.0",
+  "AssemblyVersion": "1.6.0.0",
   "Description": "A lightweight SFW roleplay scene assistant for tracking RP partners, organizing and filtering captured chat, pinning important lines, saving searchable scene history, tracking and sharing follow-ups, checking Scene Builder spelling, exporting Markdown recaps, using the guided Scene Builder, and making active scenes easier to follow.",
   "ApplicableVersion": "any",
   "Tags": [
