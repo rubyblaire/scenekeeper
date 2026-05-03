@@ -97,30 +97,123 @@ public sealed class MainWindow : Window
     {
         this.ProcessSceneBuilderPostQueue();
 
-        ImGui.TextUnformatted("SceneKeeper");
-        ImGui.SameLine();
-        ImGui.TextDisabled(this.configuration.IsTrackingPaused ? "Paused" : "Tracking");
-        ImGui.Separator();
-
-        if (!string.IsNullOrWhiteSpace(this.statusMessage))
+        this.PushSceneKeeperStyle();
+        try
         {
-            ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.78f, 0.64f, 0.40f, 1.0f));
-            ImGui.TextWrapped($"✓ {this.statusMessage}");
-            ImGui.PopStyleColor();
-            ImGui.Spacing();
+            this.DrawSceneKeeperHeader();
+            this.DrawStatusBanner();
+
+            if (ImGui.BeginTabBar("SceneKeeperTabs"))
+            {
+                if (ImGui.BeginTabItem("Scene")) { this.DrawSceneTab(); ImGui.EndTabItem(); }
+                if (ImGui.BeginTabItem("Scene Builder")) { this.DrawSceneBuilderTab(); ImGui.EndTabItem(); }
+                if (ImGui.BeginTabItem("Captured Chat")) { this.DrawCapturedChatTab(); ImGui.EndTabItem(); }
+                if (ImGui.BeginTabItem("Partners")) { this.DrawPartnersTab(); ImGui.EndTabItem(); }
+                if (ImGui.BeginTabItem("History")) { this.DrawHistoryTab(); ImGui.EndTabItem(); }
+                if (ImGui.BeginTabItem("Settings")) { this.DrawSettingsTab(); ImGui.EndTabItem(); }
+                ImGui.EndTabBar();
+            }
         }
-
-        if (ImGui.BeginTabBar("SceneKeeperTabs"))
+        finally
         {
-            if (ImGui.BeginTabItem("Scene")) { this.DrawSceneTab(); ImGui.EndTabItem(); }
-            if (ImGui.BeginTabItem("Scene Builder")) { this.DrawSceneBuilderTab(); ImGui.EndTabItem(); }
-            if (ImGui.BeginTabItem("Captured Chat")) { this.DrawCapturedChatTab(); ImGui.EndTabItem(); }
-            if (ImGui.BeginTabItem("Partners")) { this.DrawPartnersTab(); ImGui.EndTabItem(); }
-            if (ImGui.BeginTabItem("History")) { this.DrawHistoryTab(); ImGui.EndTabItem(); }
-            if (ImGui.BeginTabItem("Settings")) { this.DrawSettingsTab(); ImGui.EndTabItem(); }
-            ImGui.EndTabBar();
+            this.PopSceneKeeperStyle();
         }
     }
+
+    private void DrawSceneKeeperHeader()
+    {
+        var drawList = ImGui.GetWindowDrawList();
+        var min = ImGui.GetCursorScreenPos();
+        var width = Math.Max(1.0f, ImGui.GetContentRegionAvail().X);
+        var max = min + new Vector2(width, 58.0f);
+
+        drawList.AddRectFilled(min, max, ToU32(new Vector4(0.07f, 0.055f, 0.085f, 0.98f)), 12.0f);
+        drawList.AddRectFilledMultiColor(
+            min,
+            max,
+            ToU32(new Vector4(0.18f, 0.10f, 0.16f, 0.48f)),
+            ToU32(new Vector4(0.11f, 0.075f, 0.13f, 0.48f)),
+            ToU32(new Vector4(0.045f, 0.04f, 0.06f, 0.96f)),
+            ToU32(new Vector4(0.045f, 0.04f, 0.06f, 0.96f)));
+        drawList.AddRect(min, max, ToU32(new Vector4(0.78f, 0.64f, 0.40f, 0.36f)), 12.0f, ImDrawFlags.RoundCornersAll, 1.0f);
+        drawList.AddLine(min + new Vector2(18.0f, 43.0f), max - new Vector2(18.0f, 15.0f), ToU32(new Vector4(0.78f, 0.64f, 0.40f, 0.28f)), 1.0f);
+
+        drawList.AddText(min + new Vector2(18.0f, 10.0f), ToU32(new Vector4(0.96f, 0.88f, 0.72f, 1.0f)), "SceneKeeper");
+
+        var sceneName = string.IsNullOrWhiteSpace(this.configuration.CurrentSceneName) ? "Untitled scene" : this.configuration.CurrentSceneName.Trim();
+        var subtitle = $"{sceneName}  •  {this.SceneService.Messages.Count} line(s)  •  {this.configuration.Partners.Count} partner(s)";
+        drawList.AddText(min + new Vector2(18.0f, 32.0f), ToU32(new Vector4(0.74f, 0.67f, 0.70f, 1.0f)), subtitle);
+
+        var state = this.configuration.IsTrackingPaused ? "Paused" : "Tracking";
+        var stateSize = ImGui.CalcTextSize(state);
+        var pillMin = new Vector2(max.X - stateSize.X - 34.0f, min.Y + 16.0f);
+        var pillMax = new Vector2(max.X - 18.0f, min.Y + 42.0f);
+        drawList.AddRectFilled(pillMin, pillMax, ToU32(this.configuration.IsTrackingPaused ? new Vector4(0.36f, 0.18f, 0.22f, 0.92f) : new Vector4(0.19f, 0.25f, 0.18f, 0.92f)), 13.0f);
+        drawList.AddRect(pillMin, pillMax, ToU32(new Vector4(0.78f, 0.64f, 0.40f, 0.30f)), 13.0f);
+        drawList.AddText(pillMin + new Vector2(14.0f, 5.0f), ToU32(new Vector4(0.96f, 0.88f, 0.72f, 1.0f)), state);
+
+        ImGui.Dummy(new Vector2(width, 64.0f));
+    }
+
+    private void DrawStatusBanner()
+    {
+        if (string.IsNullOrWhiteSpace(this.statusMessage))
+            return;
+
+        ImGui.PushStyleColor(ImGuiCol.ChildBg, new Vector4(0.16f, 0.11f, 0.14f, 0.92f));
+        ImGui.PushStyleColor(ImGuiCol.Border, new Vector4(0.78f, 0.64f, 0.40f, 0.34f));
+        if (ImGui.BeginChild("SceneKeeperStatusBanner", new Vector2(0, 36), true, ImGuiWindowFlags.NoScrollbar))
+        {
+            ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.93f, 0.82f, 0.58f, 1.0f));
+            ImGui.TextWrapped($"✓ {this.statusMessage}");
+            ImGui.PopStyleColor();
+        }
+        ImGui.EndChild();
+        ImGui.PopStyleColor(2);
+        ImGui.Spacing();
+    }
+
+    private void PushSceneKeeperStyle()
+    {
+        ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, 10.0f);
+        ImGui.PushStyleVar(ImGuiStyleVar.ChildRounding, 9.0f);
+        ImGui.PushStyleVar(ImGuiStyleVar.FrameRounding, 7.0f);
+        ImGui.PushStyleVar(ImGuiStyleVar.GrabRounding, 7.0f);
+        ImGui.PushStyleVar(ImGuiStyleVar.TabRounding, 7.0f);
+        ImGui.PushStyleVar(ImGuiStyleVar.ScrollbarRounding, 9.0f);
+        ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, new Vector2(9.0f, 5.0f));
+        ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, new Vector2(8.0f, 7.0f));
+
+        ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0.045f, 0.038f, 0.055f, 0.96f));
+        ImGui.PushStyleColor(ImGuiCol.ChildBg, new Vector4(0.070f, 0.060f, 0.082f, 0.90f));
+        ImGui.PushStyleColor(ImGuiCol.PopupBg, new Vector4(0.055f, 0.047f, 0.067f, 0.98f));
+        ImGui.PushStyleColor(ImGuiCol.Border, new Vector4(0.78f, 0.64f, 0.40f, 0.22f));
+        ImGui.PushStyleColor(ImGuiCol.FrameBg, new Vector4(0.105f, 0.084f, 0.115f, 0.96f));
+        ImGui.PushStyleColor(ImGuiCol.FrameBgHovered, new Vector4(0.18f, 0.12f, 0.16f, 1.0f));
+        ImGui.PushStyleColor(ImGuiCol.FrameBgActive, new Vector4(0.24f, 0.15f, 0.20f, 1.0f));
+        ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.33f, 0.20f, 0.27f, 0.95f));
+        ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(0.46f, 0.27f, 0.36f, 1.0f));
+        ImGui.PushStyleColor(ImGuiCol.ButtonActive, new Vector4(0.58f, 0.34f, 0.44f, 1.0f));
+        ImGui.PushStyleColor(ImGuiCol.Header, new Vector4(0.31f, 0.19f, 0.26f, 0.72f));
+        ImGui.PushStyleColor(ImGuiCol.HeaderHovered, new Vector4(0.45f, 0.27f, 0.36f, 0.86f));
+        ImGui.PushStyleColor(ImGuiCol.HeaderActive, new Vector4(0.58f, 0.35f, 0.45f, 0.96f));
+        ImGui.PushStyleColor(ImGuiCol.Tab, new Vector4(0.095f, 0.075f, 0.105f, 1.0f));
+        ImGui.PushStyleColor(ImGuiCol.TabHovered, new Vector4(0.40f, 0.24f, 0.32f, 1.0f));
+        ImGui.PushStyleColor(ImGuiCol.TabActive, new Vector4(0.30f, 0.18f, 0.25f, 1.0f));
+        ImGui.PushStyleColor(ImGuiCol.CheckMark, new Vector4(0.78f, 0.64f, 0.40f, 1.0f));
+        ImGui.PushStyleColor(ImGuiCol.SliderGrab, new Vector4(0.78f, 0.64f, 0.40f, 0.95f));
+        ImGui.PushStyleColor(ImGuiCol.SliderGrabActive, new Vector4(0.95f, 0.79f, 0.48f, 1.0f));
+        ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.91f, 0.86f, 0.80f, 1.0f));
+        ImGui.PushStyleColor(ImGuiCol.TextDisabled, new Vector4(0.62f, 0.56f, 0.60f, 1.0f));
+    }
+
+    private void PopSceneKeeperStyle()
+    {
+        ImGui.PopStyleColor(21);
+        ImGui.PopStyleVar(8);
+    }
+
+    private static uint ToU32(Vector4 color) => ImGui.ColorConvertFloat4ToU32(color);
 
     private void DrawSceneTab()
     {
@@ -1155,18 +1248,6 @@ public sealed class MainWindow : Window
         if (ImGui.SliderInt("Max saved scenes", ref maxHistory, 1, 100)) { this.configuration.MaxSceneHistoryEntries = maxHistory; this.saveConfig(); }
 
         ImGui.Separator();
-        ImGui.TextUnformatted("Support & Bug Reports");
-        ImGui.TextWrapped("Need help, found a bug, or want to support SceneKeeper? These links open in your browser.");
-
-        if (ImGui.Button("Report a Bug / Join Discord"))
-            this.OpenExternalUrl(DiscordInviteUrl, "Discord invite copied to clipboard.");
-
-        ImGui.SameLine();
-
-        if (ImGui.Button("Support on Ko-fi"))
-            this.OpenExternalUrl(KofiUrl, "Ko-fi link copied to clipboard.");
-
-        ImGui.Separator();
         ImGui.TextUnformatted("Logged Chat Types");
         ImGui.TextWrapped("Toggle which visible chat types SceneKeeper should capture into the Captured Chat tab.");
 
@@ -1215,6 +1296,27 @@ public sealed class MainWindow : Window
             this.saveConfig();
             this.statusMessage = "Custom spellcheck dictionary cleared.";
         }
+
+        this.DrawSettingsSupportFooter();
+    }
+
+    private void DrawSettingsSupportFooter()
+    {
+        var remaining = ImGui.GetContentRegionAvail().Y;
+        if (remaining > 96.0f)
+            ImGui.Dummy(new Vector2(1.0f, remaining - 96.0f));
+
+        ImGui.Separator();
+        ImGui.TextUnformatted("Support & Bug Reports");
+        ImGui.TextWrapped("Need help, found a bug, or want to support SceneKeeper? These links open in your browser.");
+
+        if (ImGui.Button("Report a Bug / Join Discord", new Vector2(210.0f, 0.0f)))
+            this.OpenExternalUrl(DiscordInviteUrl, "Discord invite copied to clipboard.");
+
+        ImGui.SameLine();
+
+        if (ImGui.Button("Support on Ko-fi", new Vector2(160.0f, 0.0f)))
+            this.OpenExternalUrl(KofiUrl, "Ko-fi link copied to clipboard.");
     }
 
     private void OpenExternalUrl(string url, string fallbackStatusMessage)

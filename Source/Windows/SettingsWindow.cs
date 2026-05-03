@@ -53,11 +53,14 @@ public sealed class SettingsWindow : Window
 
     public override void Draw()
     {
-        ImGui.TextUnformatted("SceneKeeper Settings");
-        ImGui.Separator();
+        this.PushSceneKeeperStyle();
+        try
+        {
+            ImGui.TextUnformatted("SceneKeeper Settings");
+            ImGui.Separator();
 
-        var enableChatCapture = this.configuration.EnableChatCapture;
-        if (ImGui.Checkbox("Enable chat capture", ref enableChatCapture)) { this.configuration.EnableChatCapture = enableChatCapture; this.saveConfig(); }
+            var enableChatCapture = this.configuration.EnableChatCapture;
+            if (ImGui.Checkbox("Enable chat capture", ref enableChatCapture)) { this.configuration.EnableChatCapture = enableChatCapture; this.saveConfig(); }
 
         var enableOverlay = this.configuration.EnableOverlayMarkers;
         if (ImGui.Checkbox("Enable partner markers", ref enableOverlay)) { this.configuration.EnableOverlayMarkers = enableOverlay; this.saveConfig(); }
@@ -102,18 +105,6 @@ public sealed class SettingsWindow : Window
         if (ImGui.SliderInt("Max saved scenes", ref maxHistory, 1, 100)) { this.configuration.MaxSceneHistoryEntries = maxHistory; this.saveConfig(); }
 
         ImGui.Separator();
-        ImGui.TextUnformatted("Support & Bug Reports");
-        ImGui.TextWrapped("Need help, found a bug, or want to support SceneKeeper? These links open in your browser.");
-
-        if (ImGui.Button("Report a Bug / Join Discord"))
-            OpenExternalUrl(DiscordInviteUrl);
-
-        ImGui.SameLine();
-
-        if (ImGui.Button("Support on Ko-fi"))
-            OpenExternalUrl(KofiUrl);
-
-        ImGui.Separator();
         ImGui.TextUnformatted("Logged Chat Types");
 
         if (ImGui.Button("RP Defaults"))
@@ -141,6 +132,67 @@ public sealed class SettingsWindow : Window
             if (i % 2 == 0)
                 ImGui.SameLine(260);
         }
+
+        DrawSupportFooter();
+        }
+        finally
+        {
+            this.PopSceneKeeperStyle();
+        }
+    }
+
+    private static void DrawSupportFooter()
+    {
+        var remaining = ImGui.GetContentRegionAvail().Y;
+        if (remaining > 88.0f)
+            ImGui.Dummy(new Vector2(1.0f, remaining - 88.0f));
+
+        ImGui.Separator();
+        ImGui.TextUnformatted("Support & Bug Reports");
+        ImGui.TextWrapped("Need help, found a bug, or want to support SceneKeeper? These links open in your browser.");
+
+        if (ImGui.Button("Report a Bug / Join Discord", new Vector2(210.0f, 0.0f)))
+            OpenExternalUrl(DiscordInviteUrl);
+
+        ImGui.SameLine();
+
+        if (ImGui.Button("Support on Ko-fi", new Vector2(160.0f, 0.0f)))
+            OpenExternalUrl(KofiUrl);
+    }
+
+    private void PushSceneKeeperStyle()
+    {
+        ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, 10.0f);
+        ImGui.PushStyleVar(ImGuiStyleVar.ChildRounding, 9.0f);
+        ImGui.PushStyleVar(ImGuiStyleVar.FrameRounding, 7.0f);
+        ImGui.PushStyleVar(ImGuiStyleVar.GrabRounding, 7.0f);
+        ImGui.PushStyleVar(ImGuiStyleVar.ScrollbarRounding, 9.0f);
+        ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, new Vector2(9.0f, 5.0f));
+        ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, new Vector2(8.0f, 7.0f));
+
+        ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0.045f, 0.038f, 0.055f, 0.96f));
+        ImGui.PushStyleColor(ImGuiCol.ChildBg, new Vector4(0.070f, 0.060f, 0.082f, 0.90f));
+        ImGui.PushStyleColor(ImGuiCol.Border, new Vector4(0.78f, 0.64f, 0.40f, 0.22f));
+        ImGui.PushStyleColor(ImGuiCol.FrameBg, new Vector4(0.105f, 0.084f, 0.115f, 0.96f));
+        ImGui.PushStyleColor(ImGuiCol.FrameBgHovered, new Vector4(0.18f, 0.12f, 0.16f, 1.0f));
+        ImGui.PushStyleColor(ImGuiCol.FrameBgActive, new Vector4(0.24f, 0.15f, 0.20f, 1.0f));
+        ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.33f, 0.20f, 0.27f, 0.95f));
+        ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(0.46f, 0.27f, 0.36f, 1.0f));
+        ImGui.PushStyleColor(ImGuiCol.ButtonActive, new Vector4(0.58f, 0.34f, 0.44f, 1.0f));
+        ImGui.PushStyleColor(ImGuiCol.Header, new Vector4(0.31f, 0.19f, 0.26f, 0.72f));
+        ImGui.PushStyleColor(ImGuiCol.HeaderHovered, new Vector4(0.45f, 0.27f, 0.36f, 0.86f));
+        ImGui.PushStyleColor(ImGuiCol.HeaderActive, new Vector4(0.58f, 0.35f, 0.45f, 0.96f));
+        ImGui.PushStyleColor(ImGuiCol.CheckMark, new Vector4(0.78f, 0.64f, 0.40f, 1.0f));
+        ImGui.PushStyleColor(ImGuiCol.SliderGrab, new Vector4(0.78f, 0.64f, 0.40f, 0.95f));
+        ImGui.PushStyleColor(ImGuiCol.SliderGrabActive, new Vector4(0.95f, 0.79f, 0.48f, 1.0f));
+        ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.91f, 0.86f, 0.80f, 1.0f));
+        ImGui.PushStyleColor(ImGuiCol.TextDisabled, new Vector4(0.62f, 0.56f, 0.60f, 1.0f));
+    }
+
+    private void PopSceneKeeperStyle()
+    {
+        ImGui.PopStyleColor(17);
+        ImGui.PopStyleVar(7);
     }
 
     private static void OpenExternalUrl(string url)

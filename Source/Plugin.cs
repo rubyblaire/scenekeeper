@@ -57,7 +57,7 @@ public sealed class Plugin : IDalamudPlugin
         {
             Name = new SeStringBuilder().AddText("Add to SceneKeeper").Build(),
             PrefixChar = 'S',
-            Priority = -10,
+            Priority = 10_000,
             OnClicked = this.OnAddScenePartnerMenuClicked,
         };
         this.contextMenu.OnMenuOpened += this.OnContextMenuOpened;
@@ -153,8 +153,15 @@ public sealed class Plugin : IDalamudPlugin
             if (args.Target is not MenuTargetDefault target)
                 return;
 
+            var addonName = args.AddonName ?? string.Empty;
+            if (this.IsBlockedContextMenuAddon(addonName))
+                return;
+
             var targetName = this.GetSafeContextTargetName(target);
             if (string.IsNullOrWhiteSpace(targetName))
+                return;
+
+            if (!this.IsSupportedSceneKeeperTarget(target, targetName, addonName))
                 return;
 
             // Avoid offering "Add to SceneKeeper" on yourself. This also prevents the
@@ -187,6 +194,112 @@ public sealed class Plugin : IDalamudPlugin
         return target.TargetName ?? string.Empty;
     }
 
+    private bool IsSupportedSceneKeeperTarget(MenuTargetDefault target, string targetName, string addonName)
+    {
+        try
+        {
+            var targetObject = target.TargetObject;
+            if (targetObject is not null)
+            {
+                var objectKind = targetObject.ObjectKind.ToString();
+
+                // Only live player objects should get SceneKeeper's context menu entry.
+                // This prevents minions, mounts, pets, inventory-like objects, retainers, etc.
+                // from receiving "Add to SceneKeeper" when they expose Default menus.
+                return objectKind.Equals("Player", StringComparison.OrdinalIgnoreCase)
+                    || objectKind.Equals("Pc", StringComparison.OrdinalIgnoreCase);
+            }
+        }
+        catch
+        {
+            // If the object payload is not safe to inspect, fall back to character/chat checks below.
+        }
+
+        // No live game object means this must come from a known chat/social addon.
+        // Do not trust CharacterData or home world by themselves here: non-player UI
+        // windows such as the Minion Guide can still leak Default target payloads.
+        if (!this.IsAllowedNoObjectContextMenuAddon(addonName))
+            return false;
+
+        try
+        {
+            // Some chat/social/player lists provide a CharacterData payload even when
+            // there is no live object. Only accept it after the addon allow-list check.
+            if (target.TargetCharacter is not null)
+                return true;
+        }
+        catch
+        {
+            // Not every default context menu exposes character data.
+        }
+
+        try
+        {
+            var homeWorld = target.TargetHomeWorld.Value.Name.ToString();
+            return !string.IsNullOrWhiteSpace(homeWorld)
+                && !NameWorldParser.NamesMatch(targetName, this.objectTable.LocalPlayer?.Name.TextValue);
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private bool IsBlockedContextMenuAddon(string addonName)
+    {
+        if (string.IsNullOrWhiteSpace(addonName))
+            return false;
+
+        string[] blockedTerms =
+        [
+            "Minion",
+            "Mount",
+            "Companion",
+            "Buddy",
+            "Pet",
+            "Ornament",
+            "Inventory",
+            "Armoury",
+            "Retainer",
+            "Item",
+            "Action",
+            "Recipe",
+            "Gathering",
+            "Fishing",
+            "Cabinet",
+            "Mirage",
+            "CharaCard",
+        ];
+
+        return blockedTerms.Any(term => addonName.Contains(term, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private bool IsAllowedNoObjectContextMenuAddon(string addonName)
+    {
+        if (string.IsNullOrWhiteSpace(addonName))
+            return false;
+
+        string[] allowedTerms =
+        [
+            "ChatLog",
+            "Social",
+            "Friend",
+            "Party",
+            "Linkshell",
+            "LinkShell",
+            "CrossWorldLinkshell",
+            "FreeCompany",
+            "Contact",
+            "PlayerSearch",
+            "LookingForGroup",
+            "BlackList",
+            "MuteList",
+            "Fellowship",
+        ];
+
+        return allowedTerms.Any(term => addonName.Contains(term, StringComparison.OrdinalIgnoreCase));
+    }
+
     private void OnAddScenePartnerMenuClicked(IMenuItemClickedArgs args)
     {
         try
@@ -200,8 +313,15 @@ public sealed class Plugin : IDalamudPlugin
             if (args.Target is not MenuTargetDefault target)
                 return;
 
+            var addonName = args.AddonName ?? string.Empty;
+            if (this.IsBlockedContextMenuAddon(addonName))
+                return;
+
             var targetName = this.GetSafeContextTargetName(target);
             if (string.IsNullOrWhiteSpace(targetName))
+                return;
+
+            if (!this.IsSupportedSceneKeeperTarget(target, targetName, addonName))
                 return;
 
             var localName = this.objectTable.LocalPlayer?.Name.TextValue;
